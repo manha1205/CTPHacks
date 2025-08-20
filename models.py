@@ -23,9 +23,10 @@ class job_application(Base):
     title: Mapped[str] = mapped_column(String(200), nullable= False)
     company: Mapped[str] = mapped_column(String(200), nullable= False)
     due_date: Mapped[DATE| None]
+    status: Mapped[Status] = mapped_column(SAEnum(Status), default= Status.unapplied, nullable= False)
     
     user = relationship("User", back_populates= "applications")
     user_id = mapped_column(ForeignKey("users.id", ondelete= "CASCADE"), nullable= False, index= True)
     
-    
+
     
