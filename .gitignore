@@ -15,7 +15,12 @@ Thumbs.db
 
 # Ignore logs and temp files
 *.log
-*.tmp# Byte-compiled / optimized / DLL files
+*.tmp
+
+# Ignore .vscode
+.vscode/
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
