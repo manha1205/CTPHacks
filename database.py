@@ -12,5 +12,5 @@ engine = create_engine(db, pool_pre_ping=True)
 
 SessionLocal = sessionmaker(bind=engine)
 
-print("DB URL is:", db)
+
 
