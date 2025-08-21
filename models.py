@@ -25,9 +25,10 @@ class JobApplications(Base):
     
     id : Mapped[int] = mapped_column(Integer, primary_key= True, nullable= False, autoincrement= True)
     title: Mapped[str] = mapped_column(String(200), nullable= False)
+    description: Mapped[str| None] = mapped_column(String(30000), nullable= True)
     company: Mapped[str] = mapped_column(String(200), nullable= False)
-    due_date: Mapped[date| None] = mapped_column(Date, nullable= True)
-    link : Mapped[str|None] = mapped_column(String(2000))
+    due_date: Mapped[date] = mapped_column(Date, nullable= False)
+    link : Mapped[str|None] = mapped_column(String(2000), nullable= True)
     status: Mapped[Status] = mapped_column(SAEnum(Status), default= Status.unapplied, nullable= False)
     
     user : Mapped["User"] = relationship("User", back_populates= "applications")

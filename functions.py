@@ -2,7 +2,12 @@ import models
 from sqlalchemy.orm import Session
 
 def create_user(db: Session, email):
-    user = models.User(email =email)
+    email = email.strip().lower()
+    existing = db.query(models.User).filter(models.User.email == email).first()
+    if existing:
+        return existing
+    
+    user= models.User(email= email)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -12,8 +17,8 @@ def get_user(db:Session, user_id):
     user = db.query(models.User).filter(models.User.id == user_id).first()
     return user
 
-def create_job(db:Session, title, link, company, due, user_id, user, status: models.Status ): #create new, use post?
-    new_job = models.JobApplications( title = title, company = company, due_date = due, link = link, status = status)
+def create_job(db:Session, title, link, company, due, user_id, jobdescription, status: models.Status ): #create new, use post?
+    new_job = models.JobApplications( description = jobdescription, title = title, company = company, due_date = due, link = link, user_id= user_id, status = status)
     db.add(new_job)
     db.commit()
     db.refresh(new_job)
@@ -36,7 +41,9 @@ def delete_application(db:Session, job_id): #use delete
         db.delete(job)
         db.commit()
         return job 
-    return None
+    if not job:
+        return None
+
 def sort_applications(db: Session, user_id):
     return db.query(models.JobApplications).filter(models.JobApplications.user_id == user_id).order_by(models.JobApplications.due_date.asc()).all()
     
