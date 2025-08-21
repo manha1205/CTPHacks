@@ -43,6 +43,7 @@ Award points based on:
 - Presence of relevant keywords and skills
 - Relevant experience and projects
 Return a score out of 100 and a brief explanation using short bullet points.
+Please output this as JSON
 
 Job Description:
 {job_description}
@@ -54,7 +55,7 @@ Score and Explanation:
 """
 
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-turbo",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that evaluates resumes."},
             {"role": "user", "content": prompt}
