@@ -4,7 +4,6 @@ from database import SessionLocal, engine, Base
 import models
 from datetime import date
 import os
-import io
 from functions import create_user, get_user, create_job, update_job, view_jobs
 from resume import scrape_job_description, extract_resume_text, grade_resume
 # from functions import create_user, get_user, create_job, update_job, view_jobs
@@ -14,31 +13,13 @@ from resume import scrape_job_description, extract_resume_text, grade_resume
 Base.metadata.create_all(bind=engine)
 app = Flask(__name__)
 
+
 def get_db():
     return SessionLocal()
-
-def get_current_user(db):
-    profile = functions.get_clerk_user_from_request()
-    if not profile:
-        return None
-
-    clerk_id = profile["id"]
-    # Get primary email
-    email_obj = next(
-        (e for e in profile["email_addresses"] if e["id"] == profile["primary_email_address_id"]),
-        profile["email_addresses"][0]
-    )
-    email = email_obj["email_address"]
-
-    user = db.query(models.User).filter(models.User.id == clerk_id).first()
-    if not user:
-        user = functions.create_user(db, clerk_id, email)
-    return user
-
-
+    
 @app.route('/users/<int:user_id>/jobs', methods= ["GET"])
 def list_jobs(user_id):
-    db = get_db()()
+    db = get_db()
     try:
         jobs = functions.sort_applications(db, user_id)
         job_list =[{"id" : job.id, 
@@ -52,20 +33,20 @@ def list_jobs(user_id):
     finally:
         db.close()   
 
-# @app.route("/users", methods = ["POST"])
-# def create_user_route():
-#     db = get_db()
-#     try:
-#         data = request.get_json()
-#         email = data["email"]
-        # new_user = functions.create_user(db, email)
+@app.route("/users", methods = ["POST"])
+def create_user_route():
+    db = get_db()
+    try:
+        data = request.get_json()
+        email = data["email"]
+        new_user = functions.create_user(db, email)
         
-#         return jsonify({ "id": new_user.id, "email": new_user.email})
-#     finally:
-#         db.close()
+        return jsonify({ "id": new_user.id, "email": new_user.email})
+    finally:
+        db.close()
 
 
-@app.route("/users/<user_id>", methods=["GET"])
+@app.route("/users/<int:user_id>", methods = ["GET"])
 def display_user(user_id):
     db = get_db()
     try:
@@ -76,10 +57,10 @@ def display_user(user_id):
     finally:
         db.close()
         
-
-@app.route("/jobs", methods= ["POST"])
+#ok lemme try
+@app.route("/jobs", methods= ["POST"]) #to create job u do our server thingy port 80 then /jobs and there should be a thing below the url putter where it allows u to put the body, u put the json input of whats expected.
 def create_job():
-    db = get_db()
+    db = get_db()#so its like the body goes all of those parameters basically "title": "the title " , etc
     try:
         data = request.get_json()
         
@@ -141,62 +122,29 @@ def delete_route(job_id):
                        "message": "has been deleted"}), 200
     finally:
         db.close()
-# @app.route("/resume", methods=["POST"])
-# def upload_resume():
-#     db = get_db()
-#     try:
-#         user = get_current_user(db)
-#         if not user:
-#             return jsonify({"error": "Unauthorized"}), 401
-#         file = request.files["file"]
-#         resume = functions.save_or_replace_resume(db, user.id, file)
-#         return jsonify({"filename": resume.resume_filename})
-#     finally:
-#         db.close()
 
-@app.route("/resume", methods=["GET"])
-def download_resume():
-    db = get_db()
-    try:
-        user = get_current_user(db)
-        if not user:
-            return jsonify({"error": "Unauthorized"}), 401
-        resume = functions.get_resume(db, user.id)
-        if not resume:
-            return jsonify({"error": "No resume found"}), 404
-        return send_file(
-            io.BytesIO(resume.resume_data),
-            download_name=resume.resume_filename,
-            mimetype="application/pdf"
-        )
-    finally:
-        db.close()
 
-@app.route("/me", methods=["GET"])
-def me():
-    db = get_db()
-    try:
-        user = get_current_user(db)
-        if not user:
-            return jsonify({"error": "Unauthorized"}), 401
-        return jsonify({"id": user.id, "email": user.email})
-    finally:
-        db.close()
 
-@app.route("/upload-resume", methods=["GET", "POST"])
+@app.route("/resume-uploader", methods=["GET", "POST"])
 def upload_resume():
     result = None
     if request.method == "POST":
         uploaded_file = request.files["resume"]
         job_url = request.form.get("job_url")
-    return functions.res
-
+        result = upload_resume(uploaded_file, job_url)
+    return jsonify({"result":result})
+    
+#why comment that out
 #Run the app
+#i see my requests popping up in the terminal, as 404 so i think its working on port 80
+#just dont know how to access it, i asked manha 
+#oh ok yea same
+#idk what changed
+#but before it would list it outi tried to run
+#try now?
 app.run(host="0.0.0.0", port="80", debug=True)
 
 def index():
     if __name__ == "__main__":
-        return "Test"
+        return "test"
         
-
-    

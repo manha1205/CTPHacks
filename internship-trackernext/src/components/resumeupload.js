@@ -2,46 +2,47 @@
 import { useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 
+export default function ResumeUpload({ onUploadSucess }) {
+  const [file, setFile] = useState(null);
+  const [status, setStatus] = useState("");
 
-export default function ResumeUpload( { onUploadSucess }) {
-    const [file, setFile] = useState(null);
-    const [status, setStatus] = useState("")
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0])
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      setStatus("Please select a file");
+      return;
+    }
 
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("job_url", "https://example.com/job"); 
+    try {
+      const res = await fetch("http://localhost:80/resume-uploader", {
+        method: "POST",
+        body: formData, // browser sets headers automatically
+      });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!file) {
-            setStatus("Please select a file");
-            return;
+      if (res.ok) {
+        const data = await res.json();
+        setStatus("Uploaded Successfully!");
+        if (onUploadSucess) {
+          onUploadSucess(data.result); 
         }
+      } else {
+        setStatus("Error Upload Failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("An error occurred");
+    }
+  };
 
-        const formData = new FormData();
-        formData.append("resume", file)
-
-        try {
-            const res = await fetch("api/upload_resume", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (res.ok) {
-                setStatus("Uploaded Successfully!")
-            }
-            else {
-                setStatus("Error Upload Failed")
-            }
-        } catch (err) {
-            console.error(err)
-            setStatus("An error occured")
-        }
-    };
-
-    return (
-        <Box sx={{ mt: 4, textAlign: "center" }}>
+  return (
+    <Box sx={{ mt: 4, textAlign: "center" }}>
       <form onSubmit={handleSubmit}>
         <Button variant="outlined" component="label">
           {file ? file.name : "Choose Resume"}
@@ -53,11 +54,7 @@ export default function ResumeUpload( { onUploadSucess }) {
           />
         </Button>
 
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{ ml: 2 }}
-        >
+        <Button type="submit" variant="contained" sx={{ ml: 2 }}>
           Upload Resume
         </Button>
       </form>
@@ -68,5 +65,5 @@ export default function ResumeUpload( { onUploadSucess }) {
         </Typography>
       )}
     </Box>
-    )
-};
+  );
+}

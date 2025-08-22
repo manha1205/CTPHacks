@@ -19,8 +19,8 @@ export default function Appbar() {
         >
           {/* Logo / Brand */}
           <Button
-            onClick={() => router.push('/')}
-            sx={{ textTransform: 'none', fontSize: '1.25rem', color: 'inherit' }}
+            onClick={() => router.push('/')} 
+            sx={{ fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.02em', color: 'success.main', fontSize: { xs: "0.75rem", sm: "1.25rem", md: "1.75rem" },}}
           >
             TernTrack
           </Button>
@@ -32,17 +32,18 @@ export default function Appbar() {
               left: '50%',
               transform: 'translateX(-50%)',
               display: 'flex',
-              gap: '2rem'
+              gap: '3rem'
             }}
-          >
+          ><SignedIn>
+            <Link href="/main" underline="none" color="inherit" variant="body1">
+              Dashboard
+            </Link>
+            <Link href="/resume_grading" underline="none" color="inherit" variant="body1">
+              Resume Grade
+            </Link>
+            </SignedIn>
             <Link href="/features" underline="none" color="inherit" variant="body1">
               Features
-            </Link>
-            <Link href="/contact" underline="none" color="inherit" variant="body1">
-              Contact
-            </Link>
-            <Link href="/about" underline="none" color="inherit" variant="body1">
-              About
             </Link>
           </Box>
 

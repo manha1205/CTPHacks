@@ -7,6 +7,10 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
 
+load_dotenv
+api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI(api_key=api_key)
+
 def create_user(db: Session, email):
     email = email.strip().lower()
     existing = db.query(models.User).filter(models.User.email == email).first()
@@ -83,3 +87,56 @@ def scrape_job_description(url):
     
     except Exception as e:
         return f"Error scraping job description: {str(e)}"
+    
+def extract_resume_text(file_stream):
+    text = ""
+    with pdfplumber.open(file_stream) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+    return text.strip()
+
+def grade_resume(resume_text, job_description):
+    prompt = f"""
+You are a strict resume evaluator. Compare the resume below to the job description.
+
+Scoring Criteria (out of 100):
+- Relevant keywords and skills: 30 points
+- Relevant experience and projects: 40 points
+- Educational qualifications: 30 points
+
+Important:
+1) If the resume does not meet the minimum educational qualification stated in the job description, give 0 for Educational qualifications criteria.
+- If there is no minimum educational qualification, do not evaluate this criteria.
+2) If there is a graduation date range, and the resume lists a date which is outside that range, give 0 for Educational qualifications criteria.
+- If there is no graduation date range, do not evaluate this criteria.
+
+Return a score out of 100 and a brief explanation using short bullet points.
+Please output this as JSON
+
+Job Description:
+{job_description}
+
+Resume:
+{resume_text}
+
+Score and Explanation:
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that evaluates resumes."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.3
+    )
+
+    return response.choices[0].message.content
+
+def upload_resume(uploaded_file, job_url):
+    resume_text = extract_resume_text(uploaded_file)
+    job_description = scrape_job_description(job_url)
+    result = grade_resume(resume_text, job_description)
+    return result

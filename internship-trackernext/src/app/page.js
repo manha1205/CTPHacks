@@ -1,9 +1,11 @@
-'use client'
+'use client';
 import { useRouter } from 'next/navigation';
 import { Button, Toolbar, Link, Box } from '@mui/material';
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import HeroSection from '@/components/HeroSection';
 import AppBar from '@/components/Appbar';
+import Footer from '@/components/footer'
+import LandingBody from '@/components/landingbody';
 
 
 export default function Home() {
@@ -12,6 +14,8 @@ export default function Home() {
       {/* Header with Navigation */}
         <AppBar />
        <HeroSection />
+       <Footer />
+       <LandingBody />
     </>
   );
 }

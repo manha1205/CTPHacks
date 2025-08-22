@@ -8,9 +8,9 @@ export default function HeroSection() {
     <Box
       component="section"
       sx={{
-        bgcolor: '#f5f7fa',          
+        bgcolor: '#f5f7fa',
         py: { xs: 8, md: 12 },
-        mt: { xs: 2, md: 3 },        
+        mt: { xs: 2, md: 3 },
         mx: { xs: 0, md: 2 },
         borderRadius: { xs: 0, md: 3 },
         overflow: 'hidden',
@@ -30,40 +30,71 @@ export default function HeroSection() {
               One dashboard to plan, apply, and improve—score each application, track statuses & deadlines, and boost your match.
             </Typography>
             <SignedOut>
-            <Button
-              variant="contained"
-              sx={{
-                mt: 4,
-                px: 4,
-                py: 1.5,
-                bgcolor: 'success.main',
-                borderRadius: '9999px',
-                textTransform: 'none',
-                fontWeight: 600,
-                '&:hover': { bgcolor: 'success.dark' },
-              }}
-              href="/sign-up"
-            >
-              Sign Up
-            </Button>
+              <Button
+                variant="contained"
+                sx={{
+                  mt: 4,
+                  px: 4,
+                  py: 1.5,
+                  bgcolor: 'success.main',
+                  borderRadius: '9999px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  '&:hover': { bgcolor: 'success.dark' },
+                }}
+                href="/sign-up"
+              >
+                Sign Up
+              </Button>
             </SignedOut>
             <SignedIn>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2, // spacing between buttons
+                  mt: 4,
+                }}
+              >
                 <Button
-              variant="contained"
-              sx={{
-                mt: 4,
-                px: 4,
-                py: 1.5,
-                bgcolor: 'success.main',
-                borderRadius: '9999px',
-                textTransform: 'none',
-                fontWeight: 600,
-                '&:hover': { bgcolor: 'success.dark' },
-              }}
-              href="/main"
-            >
-              Go to Dashboard
-            </Button>
+                  variant="outlined"
+                  sx={{
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: "9999px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    borderWidth: 2,
+                    color: "success.main",
+                    borderColor: "success.main",
+                    "&:hover": {
+                      borderWidth: 2,
+                      borderColor: "success.dark",
+                      color: "success.dark",
+                      backgroundColor: "rgba(46, 125, 50, 0.04)", // subtle green tint on hover
+                    },
+                  }}
+                  href="/main"
+                >
+                  Go to Dashboard
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  sx={{
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: "9999px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    borderWidth: 2,
+                    "&:hover": { borderWidth: 2 }, // keeps border thickness on hover
+                  }}
+                  href="/resume_grading"
+                >
+                  Resume Grading
+                </Button>
+              </Box>
+
             </SignedIn>
           </Grid>
 
@@ -90,7 +121,7 @@ export default function HeroSection() {
         </Grid>
       </Container>
 
-    
+
     </Box>
   );
 }
