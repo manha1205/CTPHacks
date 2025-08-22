@@ -1,5 +1,11 @@
 import models
 from sqlalchemy.orm import Session
+import pdfplumber
+import openai
+import requests
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+import os
 
 def create_user(db: Session, email):
     email = email.strip().lower()
@@ -47,3 +53,33 @@ def delete_application(db:Session, job_id): #use delete
 def sort_applications(db: Session, user_id):
     return db.query(models.JobApplications).filter(models.JobApplications.user_id == user_id).order_by(models.JobApplications.due_date.asc()).all()
     
+# Scrape job description from URL
+def scrape_job_description(url):
+    try:
+        response = requests.get(url, timeout=10)
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Combine all visible text
+        full_text = soup.get_text(separator="\n", strip=True).lower()
+
+        # Look for blocks that contain key phrases
+        keywords = ["requirements", "qualifications", "responsibilities", "skills", "looking for", "graduation", "degree"]
+        lines = full_text.split("\n")
+
+        job_lines = []
+
+        for line in lines:
+            for keyword in keywords:
+                if keyword in line:
+                    job_lines.append(line)
+                    break
+
+        # Just take 50 lines if no matches
+        if not job_lines:
+            job_lines = lines[:50] 
+
+        job_text = "\n".join(job_lines)
+        return job_text.strip()
+    
+    except Exception as e:
+        return f"Error scraping job description: {str(e)}"
