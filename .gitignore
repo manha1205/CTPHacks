@@ -229,3 +229,8 @@ marimo/_lsp/
 __marimo__/
 frontend/app-tracker/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node
 /Users/manhabasher/CTPHacks/frontend/app-tracker/node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node
+node_modules
+.next
+*.log
+.env
+.DS_Store
